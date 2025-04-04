@@ -71,19 +71,5 @@
       </plugin>
     </plugins>
   </build>
-
-  <!-- For Nexus Repository (Maven deploy) -->
-  <distributionManagement>
-    <repository>
-      <id>nexus</id>
-      <name>Internal Nexus</name>
-      <url>http://<your-nexus-host>:8081/repository/maven-releases/</url>
-    </repository>
-    <snapshotRepository>
-      <id>nexus-snapshots</id>
-      <name>Nexus Snapshot Repository</name>
-      <url>http://<your-nexus-host>:8081/repository/maven-snapshots/</url>
-    </snapshotRepository>
-  </distributionManagement>
-
+  
 </project>

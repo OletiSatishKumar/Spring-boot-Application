@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKER_HUB_CREDENTIALS = credentials('Docker_Cred') // 🔐 Docker Hub Credentials
-        IMAGE_NAME = "satishosk/fullstack-app"       // 🐳 Docker Image Name
+        IMAGE_NAME = "satishosk/fullstack-app"              // 🐳 Base Docker Image Name
     }
 
     stages {
@@ -47,12 +47,10 @@ pipeline {
 
         stage('📦 Push Docker Images to Hub') {
             steps {
-                script {
-                    bat "docker tag springboot-app %IMAGE_NAME%-backend"
-                    bat "docker tag react-app %IMAGE_NAME%-frontend"
-                    bat "docker push %IMAGE_NAME%-backend"
-                    bat "docker push %IMAGE_NAME%-frontend"
-                }
+                // Just push the images directly since they are already tagged in docker-compose.yml
+                bat "docker images"
+                bat "docker push %IMAGE_NAME%-backend"
+                bat "docker push %IMAGE_NAME%-frontend"
             }
         }
 

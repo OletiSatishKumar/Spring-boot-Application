@@ -77,48 +77,45 @@ pipeline {
     agent any
 
     environment {
-        GIT_REPO_URL = 'https://github.com/OletiSatish/Spring-boot-Application.git'  // Change to your GitHub repo
-        BRANCH = 'master'  // You can specify your branch here
+        GIT_REPO_URL = 'https://github.com/OletiSatishKumar/Spring-boot-Application.git'
+        BRANCH = 'main'
     }
 
     stages {
-        // 1. Checkout Code from GitHub
+        // 1. Checkout Code
         stage('Checkout Code') {
             steps {
                 script {
-                    // Clone the GitHub repo
                     try {
-                        checkout scm  // This will checkout the code using the GitHub webhook triggering the pipeline
-                        echo "Code cloned successfully."
+                        checkout scm
+                        echo "✅ Code cloned successfully from GitHub."
                     } catch (Exception e) {
-                        currentBuild.result = 'FAILURE'  // If cloning fails, mark the build as failed
-                        error "Code cloning failed: ${e.getMessage()}"
+                        currentBuild.result = 'FAILURE'
+                        error "❌ Code cloning failed: ${e.getMessage()}"
                     }
                 }
             }
         }
 
-        // 2. Verify the Code was Cloned
+        // 2. Verify Clone
         stage('Verify Code Clone') {
             steps {
                 script {
-                    // Checking if the repository is correctly cloned
-                    def isRepoCloned = fileExists('pom.xml')  // Check if the pom.xml exists (for Maven-based Spring Boot)
+                    def isRepoCloned = fileExists('backend/pom.xml')
                     if (isRepoCloned) {
-                        echo "Code is successfully cloned and pom.xml exists."
+                        echo "✅ backend/pom.xml found. Repo structure is valid."
                     } else {
-                        error "Code was not cloned properly, pom.xml is missing."
+                        error "❌ pom.xml is missing in backend/. Please check your repo structure."
                     }
                 }
             }
         }
 
-        // 3. Build the Project (Maven or any other build tool)
+        // 3. Build Spring Boot App
         stage('Build Project') {
             steps {
                 script {
-                    // Run Maven Build or another build tool (optional stage to add)
-                    bat 'mvn clean install'  // Use bat instead of sh for Windows environments
+                    bat 'cd backend && mvn clean install'
                 }
             }
         }
@@ -126,15 +123,15 @@ pipeline {
 
     post {
         always {
-            cleanWs()  // Clean workspace after the build, optional
+            cleanWs()
         }
 
         success {
-            echo "Pipeline completed successfully!"
+            echo "🎉 Pipeline completed successfully!"
         }
 
         failure {
-            echo "Pipeline failed. Please check the logs."
+            echo "🚨 Pipeline failed. Please check the logs above."
         }
     }
 }

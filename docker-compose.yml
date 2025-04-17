@@ -1,38 +1,28 @@
-version: "3.8"
-
 services:
-  mysql:
-    image: mysql:8
-    container_name: mysql-db
-    environment:
-      MYSQL_ROOT_PASSWORD: Satish@@1303
-      MYSQL_DATABASE: employee_management
-    ports:
-      - "3306:3306"
-    volumes:
-      - mysql-data:/var/lib/mysql
-
   backend:
     build: ./backend
-    image: satishosk/fullstack-app-backend   # ✅ Add this
-    container_name: springboot-app
     ports:
       - "8000:8000"
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/myapp
-      SPRING_DATASOURCE_USERNAME: user
-      SPRING_DATASOURCE_PASSWORD: password
     depends_on:
-      - mysql
+      - db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/employee_management
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=Satish@@1303
 
   frontend:
     build: ./frontend
-    image: satishosk/fullstack-app-frontend   # ✅ Add this
-    container_name: react-app
     ports:
       - "3000:80"
-    depends_on:
-      - backend
 
-volumes:
-  mysql-data:
+  db:
+    image: mysql:8
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=Satish@@1303
+      - MYSQL_DATABASE=employee_management
+      - MYSQL_PASSWORD=Satish@@1303
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./data/init.sql:/docker-entrypoint-initdb.d/init.sql

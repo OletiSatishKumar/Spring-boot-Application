@@ -4,12 +4,13 @@ server:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/employee_management
-    username: root
-    password: Satish@@1303
+    url: ${DB_URL:jdbc:mysql://localhost:3306/employee_management}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:Satish@@1303}
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
+
   application:
     name: spring-boot-backend

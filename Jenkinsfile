@@ -4,10 +4,6 @@ pipeline {
     environment {
         GIT_REPO_URL = 'https://github.com/OletiSatishKumar/Spring-boot-Application.git'
         BRANCH = 'master'
-
-        // SonarQube details
-        SONAR_HOST_URL = 'http://localhost:9000'
-        SONAR_LOGIN = credentials('Sonar_Token') // Jenkins credentials ID for your Sonar token
     }
 
     stages {
@@ -17,7 +13,7 @@ pipeline {
                 script {
                     try {
                         checkout scm
-                        echo "✅ Code cloned successfully from GitHub."
+                        echo '✅ Code cloned successfully from GitHub.'
                     } catch (Exception e) {
                         currentBuild.result = 'FAILURE'
                         error "❌ Code cloning failed: ${e.getMessage()}"
@@ -26,16 +22,16 @@ pipeline {
             }
         }
 
-        // 2. Verify Clone
+        // 2. Verify Clone Structure
         stage('Verify Code Clone') {
             steps {
                 script {
                     def isBackendValid = fileExists('backend/pom.xml')
                     def isFrontendValid = fileExists('frontend/src/index.js')
                     if (isBackendValid && isFrontendValid) {
-                        echo "✅ Project structure is valid. Both backend and frontend found."
+                        echo '✅ Project structure is valid. Both backend and frontend found.'
                     } else {
-                        error "❌ Check project structure. Missing backend or frontend."
+                        error '❌ Check project structure. Missing backend or frontend.'
                     }
                 }
             }
@@ -56,28 +52,34 @@ pipeline {
                 withSonarQubeEnv('MySonarQubeServer') {
                     script {
                         // Backend - Java + Maven
-                        bat """
+                        bat '''
                             cd backend
                             mvn sonar:sonar ^
                                 -Dsonar.projectKey=springboot-backend ^
-                                -Dsonar.projectName=SpringBootBackend ^
-                                -Dsonar.host.url=${SONAR_HOST_URL} ^
-                                -Dsonar.login=${SONAR_LOGIN}
-                        """
+                                -Dsonar.projectName=SpringBootBackend
+                        '''
 
-                        // Frontend - React
-                        bat """
-                            cd ../frontend
-                            sonar-scanner ^
-                                -Dsonar.projectKey=react-frontend ^
-                                -Dsonar.projectName=ReactFrontend ^
-                                -Dsonar.sources=src ^
-                                -Dsonar.language=js ^
-                                -Dsonar.sourceEncoding=UTF-8 ^
-                                -Dsonar.host.url=${SONAR_HOST_URL} ^
-                                -Dsonar.login=${SONAR_LOGIN}
-                        """
+                        // Frontend - React using CLI tool
+                        withEnv(["PATH+SONAR=${tool 'SonarScanner'}/bin"]) {
+                            bat '''
+                                cd frontend
+                                sonar-scanner ^
+                                    -Dsonar.projectKey=react-frontend ^
+                                    -Dsonar.projectName=ReactFrontend ^
+                                    -Dsonar.sources=src ^
+                                    -Dsonar.sourceEncoding=UTF-8
+                            '''
+                        }
                     }
+                }
+            }
+        }
+
+        // 5. Quality Gate Check (optional but recommended)
+        stage('SonarQube Quality Gate') {
+            steps {
+                timeout(time: 2, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
                 }
             }
         }
@@ -89,11 +91,11 @@ pipeline {
         }
 
         success {
-            echo "🎉 Pipeline completed successfully!"
+            echo '🎉 Pipeline completed successfully!'
         }
 
         failure {
-            echo "🚨 Pipeline failed. Please check the logs above."
+            echo '🚨 Pipeline failed. Please check the logs above.'
         }
     }
 }

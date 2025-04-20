@@ -1,7 +1,5 @@
 # 🚀 Spring Boot & React Full-Stack Application with CI/CD Pipeline ⚙️
 
-![Build Status](https://your-jenkins-url/job/your-pipeline-name/badge/icon)
-
 Welcome to the **Spring Boot & React Full-Stack Application** repository! This project demonstrates a complete full-stack architecture, where the backend is powered by **Spring Boot** and the frontend by **React**, with a fully automated **CI/CD pipeline** using **Jenkins**. Additionally, it leverages **Docker** for containerization and **SonarQube** for code quality analysis.
 
 ---
@@ -152,5 +150,3 @@ For any additional help, feel free to open an issue on the repository or consult
 
 By following the steps outlined in this `README`, you should be able to fully integrate and deploy the Spring Boot & React full-stack application with a CI/CD pipeline using Jenkins. Happy coding! 🚀
 ```
-
-This version is more structured, adds headings for clarity, and enhances the visual flow of the content. The addition of icons and emojis helps highlight key sections for better readability and engagement.

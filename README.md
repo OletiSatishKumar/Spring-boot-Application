@@ -1,6 +1,3 @@
-Here's the updated and formatted version of your `README.md`:
-
-```markdown
 # 🚀 Spring Boot & React Full-Stack Application with CI/CD Pipeline ⚙️
 
 Welcome to the **Spring Boot & React Full-Stack Application** repository! This project demonstrates a complete full-stack architecture, where the backend is powered by **Spring Boot** and the frontend by **React**, with a fully automated **CI/CD pipeline** using **Jenkins**. Additionally, it leverages **Docker** for containerization and **SonarQube** for code quality analysis.

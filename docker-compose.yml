@@ -1,8 +1,6 @@
-version: '3.8'
-
 services:
   backend:
-    image: satishosk/fullstack-app-backend   # ✅ Docker Hub image
+    image: satishosk/springboot-backend   # ✅ Docker Hub image
     container_name: springboot-app
     ports:
       - "8000:8000"
@@ -14,7 +12,7 @@ services:
       - SPRING_DATASOURCE_PASSWORD=Satish@@1303
 
   frontend:
-    image: satishosk/fullstack-app-frontend   # ✅ Docker Hub image
+    image: satishosk/react-frontend  # ✅ Docker Hub image
     container_name: react-app
     ports:
       - "3000:80"

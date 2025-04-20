@@ -4,6 +4,8 @@ pipeline {
     environment {
         GIT_REPO_URL = 'https://github.com/OletiSatishKumar/Spring-boot-Application.git'
         BRANCH = 'master'
+        IMAGE_BACKEND = 'satishosk/springboot-backend'
+        IMAGE_FRONTEND = 'satishosk/react-frontend'
     }
 
     stages {
@@ -51,7 +53,6 @@ pipeline {
             steps {
                 withSonarQubeEnv('MySonarQubeServer') {
                     script {
-                        // Backend - Java + Maven
                         bat '''
                             cd backend
                             mvn sonar:sonar ^
@@ -59,7 +60,6 @@ pipeline {
                                 -Dsonar.projectName=SpringBootBackend
                         '''
 
-                        // Frontend - React using CLI tool
                         withEnv(["PATH+SONAR=${tool 'SonarScanner'}/bin"]) {
                             bat '''
                                 cd frontend
@@ -75,11 +75,51 @@ pipeline {
             }
         }
 
-        // 5. Quality Gate Check (optional but recommended)
+        // 5. Quality Gate Check
         stage('SonarQube Quality Gate') {
             steps {
                 timeout(time: 2, unit: 'MINUTES') {
                     waitForQualityGate abortPipeline: true
+                }
+            }
+        }
+
+        // 6. Build Docker Images
+        stage('Build Docker Images') {
+            steps {
+                script {
+                    bat """
+                        docker build -t ${IMAGE_BACKEND}:latest backend
+                        docker build -t ${IMAGE_FRONTEND}:latest frontend
+                    """
+                }
+            }
+        }
+
+        // 7. Docker Hub Login & Push
+        stage('Push to Docker Hub') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'Docker_Cred', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    script {
+                        bat """
+                            echo Logging in to Docker Hub...
+                            echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER} --password-stdin
+
+                            docker push ${IMAGE_BACKEND}:latest
+                            docker push ${IMAGE_FRONTEND}:latest
+                        """
+                    }
+                }
+            }
+        }
+
+        // 8. Deploy with Docker Compose
+        stage('Deploy with Docker Compose') {
+            steps {
+                script {
+                    bat 'docker-compose down || echo "No containers to stop"'
+                    bat 'docker-compose pull' // In case the latest image is pushed
+                    bat 'docker-compose up -d'
                 }
             }
         }

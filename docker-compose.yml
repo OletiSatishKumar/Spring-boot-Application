@@ -28,4 +28,4 @@ services:
     ports:
       - "3307:3306"
     volumes:
-      - ./data/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./data/init.sql:/docker-entrypoint-initdb.d/init.sql  # Corrected relative path
